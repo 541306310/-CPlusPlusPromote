@@ -1,20 +1,51 @@
-﻿// CString.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
-//
+﻿#include "CString.h"
+#include <cstring>
 
-#include <iostream>
-
-int main()
+CString::CString(const char* str)
 {
-    std::cout << "Hello World!\n";
+	Len = strlen(str) + 1;
+	Date = new char[Len];
+	memcpy(Date, str, Len);
 }
 
-// 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
-// 调试程序: F5 或调试 >“开始调试”菜单
+CString::CString(const CString& obj)
+{
+	if (this == &obj)
+	{
+		return;
+	}
+	this->Len= obj.Len;
+	this->Date = new char[this->Len];
+	memcpy(this->Date, obj.Date, Len);
+}
 
-// 入门使用技巧: 
-//   1. 使用解决方案资源管理器窗口添加/管理文件
-//   2. 使用团队资源管理器窗口连接到源代码管理
-//   3. 使用输出窗口查看生成输出和其他消息
-//   4. 使用错误列表窗口查看错误
-//   5. 转到“项目”>“添加新项”以创建新的代码文件，或转到“项目”>“添加现有项”以将现有代码文件添加到项目
-//   6. 将来，若要再次打开此项目，请转到“文件”>“打开”>“项目”并选择 .sln 文件
+CString::CString(CString&& obj) noexcept
+{
+	if (this == &obj)
+		return;
+	this->Date = std::exchange(obj.Date,nullptr);
+	this->Len = obj.Len;
+}
+
+CString CString::sub(int start, int end)
+{
+	if (start < 0 || end > this->Len-1)
+		return nullptr;
+	int len = end - start +1 ;
+	char *tep = new char[len + 1];
+	int tep_flag = 0;
+	for (int i=start;i <= end; i++,tep_flag++)
+	{
+		tep[tep_flag] = this->Date[i];
+	}
+	tep[tep_flag+1] = '\0';
+	CString ret (tep);
+//	delete []tep;
+	return ret;
+}
+
+unsigned int CString::len()
+{
+	return Len;
+}
+
